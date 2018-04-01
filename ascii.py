@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import PIL
 from PIL import Image
+from PIL import ImageOps
 import sys
-# import twitter_text
+import ipdb
 
-_chars = [ u'．', u'｀', u'：', u'ｏ', u'Ｏ', u'８', u'＊', u'Ｈ', u'＃', u'＠', u'Ｗ']
-_alphabet = u'ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９'
+CHARS = [ u'．', u'｀', u'：', u'ｏ', u'Ｏ', u'８', u'＊', u'Ｈ', u'＃', u'＠', u'Ｗ']
+ALPHABET = u'ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９'
 
 def convert_text_to_monospace(text):
     output = u''
@@ -15,16 +17,8 @@ def convert_text_to_monospace(text):
         else:
             index = ord(char) - ord('A')
             start_index = 0
-        output = output + _alphabet[index + start_index]
+        output = output + ALPHABET[index + start_index]
     return output
-
-def scale_image(image, new_width=11):
-    """Resizes an image preserving the aspect ratio.
-    """
-    (width, height) = image.size
-    aspect = height / float(width)
-    new_height = int(aspect * new_width)
-    return image.resize((new_width, new_height))
 
 def map_pixels_to_ascii_chars(image, bin_width=25):
     """Maps each pixel to an ascii char based on the range
@@ -33,11 +27,26 @@ def map_pixels_to_ascii_chars(image, bin_width=25):
     0-255 is divided into 11 bins of 25 pixels each.
     """
     pixels = list(image.getdata())
-    ascii = [_chars[value / bin_width] for value in pixels]
+    ascii = [CHARS[value / bin_width] for value in pixels]
     return "".join(ascii)
 
+def adjust_image_levels(image):
+    width, height = image.size
+    minval = min(image.getdata())
+    maxval = max(image.getdata())
+    for i in range(0, width):
+        for j in range(0, height):
+            pixel=image.getpixel((i,j))
+            new_val = (pixel-minval)*(255/maxval)
+            image.putpixel((i,j),new_val)
+
 def convert_image_to_ascii(image, new_width=11):
-    image = scale_image(image, new_width=new_width).convert('L')
+    image = ImageOps.fit(image, (new_width, new_width), method=PIL.Image.LANCZOS)
+    image = image.convert('L')
+    adjust_image_levels(image)
+    # ipdb.set_trace()
+
+    # TODO: rescale values?
     ascii = map_pixels_to_ascii_chars(image)
     lines = [ascii[index: index + new_width] for index in
             xrange(0, len(ascii), new_width)]
