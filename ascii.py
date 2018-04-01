@@ -5,7 +5,7 @@ from PIL import ImageOps
 import sys
 import ipdb
 
-CHARS = [ u'．', u'｀', u'：', u'ｏ', u'Ｏ', u'８', u'＊', u'Ｈ', u'＃', u'＠', u'Ｗ']
+CHARS = [ u'．', u'＇', u'：', u'～', u'ｏ', u'Ｏ', u'８', u'＊', u'＃', u'＠', u'Ｗ']
 ALPHABET = u'ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９'
 
 def convert_text_to_monospace(text):
@@ -44,9 +44,6 @@ def convert_image_to_ascii(image, new_width=11):
     image = ImageOps.fit(image, (new_width, new_width), method=PIL.Image.LANCZOS)
     image = image.convert('L')
     adjust_image_levels(image)
-    # ipdb.set_trace()
-
-    # TODO: rescale values?
     ascii = map_pixels_to_ascii_chars(image)
     lines = [ascii[index: index + new_width] for index in
             xrange(0, len(ascii), new_width)]
