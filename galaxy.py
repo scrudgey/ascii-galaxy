@@ -35,6 +35,9 @@ def post_ascii_galaxy():
   post_image(img)
 
 def generate_image():
+  choice = random.choice(os.listdir('imgs'))
+  while choice == '.DS_Store':
+    choice = random.choice(os.listdir('imgs'))
   path =  'imgs/' + random.choice(os.listdir('imgs'))
   img = ascii.handle_image_conversion(path)
   return img
