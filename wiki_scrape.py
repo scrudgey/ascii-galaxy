@@ -5,7 +5,7 @@ import os
 import logging
 logging.basicConfig(filename='urls.log',level=logging.INFO)
 
-BULLSHIT = [u'https://upload.wikimedia.org/wikipedia/commons/a/a4/Charles_Messier.jpg',
+BAD_URLS = [u'https://upload.wikimedia.org/wikipedia/commons/a/a4/Charles_Messier.jpg',
             u'https://upload.wikimedia.org/wikipedia/en/f/fd/Portal-puzzle.svg',
             u'https://upload.wikimedia.org/wikipedia/commons/8/83/Celestia.png',
             u'https://upload.wikimedia.org/wikipedia/commons/9/93/Infrared_color_magnitude_diagram_of_Messier_79.png']
@@ -40,7 +40,7 @@ def get_url(page_title):
   page = wikipedia.page(page_title)
   index = 0
   img_url = page.images[index]
-  while img_url in BULLSHIT or 'map' in img_url or img_url[-4:] == '.svg':
+  while img_url in BAD_URLS or 'map' in img_url or img_url[-4:] == '.svg':
     index += 1
     img_url = page.images[index]
   return img_url
